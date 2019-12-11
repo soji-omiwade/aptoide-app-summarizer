@@ -3,4 +3,5 @@ lib/*.pyc
 .cache
 __pycache__/
 .coverage
-venv/
+.venv/
+*~
