@@ -1,7 +1,7 @@
 #!flask/bin/python
 from flask import Flask, request, render_template, jsonify
 from os import environ
-import lib.link_test as validate
+import lib.scraper
 import sys
 
 app = Flask(__name__)
@@ -16,10 +16,10 @@ def index():
 @app.route('/', methods=['POST'])
 def index_post():
     url = request.form['search']
-    data = validate.linkCheck(url)
+    data = lib.scraper.extract_info(url)
     print(url, data, file=sys.stderr)
     if isinstance(data, list):
-        keys = ['App Feature', 'Feature Value']
+        keys = ['Feature', 'Value']
         return render_template('index.html', data=data, keys=keys)
     else:
         return render_template('index.html', invalid_data=data)

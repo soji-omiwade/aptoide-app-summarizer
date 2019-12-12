@@ -11,6 +11,34 @@ this is a regression test.
 changing functionality will cause things here to break. 
 """
 
+-def checkProtocol(url):
+-    # Validate argument starts with http or https
+-    return url.startswith('http://') or url.startswith('https://')
+-
+
+
+def test_checkProtocol():
+    assert checkProtocol("github.com") == False
+    assert checkProtocol("http:/github.com") == False
+    assert checkProtocol("https://github.com") == True
+    assert checkProtocol("https:/github.com") == False
+
+
+def test_linkCheck():
+    assert linkCheck("https://www.github.com")
+
+
+def test_linkCheck_fail():
+    with pytest.raises(Exception):
+        assert linkCheck("ThisDoesNotExist")
+        assert linkCheck("http://ThisDoesNotExist.com")
+        assert linkCheck("https://ThisDoesNotExist.com")
+        assert linkCheck("http://www.ThisDoesNotExist.com")
+        assert linkCheck("https://www.ThisDoesNotExist.com")
+        assert linkCheck("https:/www.github.com")
+        
+        
+        
 class ConnectionTestCase(unittest.TestCase): 
     def setup():
         site = "facebook.aptoide.com"
