@@ -9,6 +9,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
+    print("foo", file=sys.stderr)
     return render_template('index.html')
 
 
@@ -16,33 +17,12 @@ def index():
 def index_post():
     url = request.form['search']
     data = validate.linkCheck(url)
+    print(url, data, file=sys.stderr)
     if isinstance(data, list):
-        keys = ['Code', 'URL']
+        keys = ['App Feature', 'Feature Value']
         return render_template('index.html', data=data, keys=keys)
     else:
         return render_template('index.html', invalid_data=data)
-
-
-@app.route('/api', methods=['GET', 'POST'])
-def api():
-    if request.method != 'POST':
-        return jsonify({ "error": "Only POST allowed" })
-
-    # json from body
-    json = request.get_json()
-
-    try:
-        validate.validate_json(json)
-    except:
-        return jsonify({ "error": "Data is not in url key" })
-
-    # check all links
-    data = validate.linkCheck(json['url'])
-    if isinstance(data, list):
-        return jsonify({ 'links': data })
-    else:
-        return data
-
 
 @app.errorhandler(404)
 def page_not_found(e):
