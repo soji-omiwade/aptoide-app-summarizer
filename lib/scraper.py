@@ -12,8 +12,6 @@ def add_description_key_value_info(soup, app_info):
         find("p", itemprop="description")
     for br in description_tag_with_breaks.find_all("br"):
         br.replace_with("\n")
-        TODO: "\n" + br.text -- check if there is text in the br that you 
-        are losing
     app_info[AppFeature.description] = description_tag_with_breaks.text
 
 def add_available_key_value_info(soup, app_info):
