@@ -3,16 +3,19 @@ from flask import jsonify
 import requests
 from enum import Enum 
 
-AppFeature = Enum("
-name.name, AppFeature.downloads.name, AppFeature.version.name, AppFeature.release_date:
+AppFeature = Enum("AppFeature", 
+    "Name Version Number-of-Downloads Release-Date Description")
 
-def add_key_value_info(soup, name, app_info):
-    for tr_app_info_row in soup.find_all("tr", class_="app-info__row"):
-        td_list = tr_app_info_row.find_all("td")
-        if td_list and name.lower() in td_list[0].text.lower():
-            app_info[name] = td_list[1].text
-
-
+def add_available_key_value_info(soup, app_info):
+    """ as long as the detailed information exists we can scrape
+        the website for everything except the description
+    """
+    for feature in AppFeature:
+        for tr_app_info_row in soup.find_all("tr", class_="app-info__row"):
+            td_list = tr_app_info_row.find_all("td")
+            if td_list and feature.name.lower().replace("-"," ") == \
+                    td_list[0].text.lower():
+                app_info[feature] = td_list[1].text
 
 """
 >>> for br in k.find_all("br"):
@@ -58,22 +61,20 @@ def extract_info(url):
         response = requests.get(url)
         content = clear_br_
         soup = BeautifulSoup(response.content, 'html.parser')
-        
         app_info = {}
 
-        app_info[AppFeature.description.name] = 
+        app_info[AppFeature.description] = 
                 soup.find(class_="view-app__description")\
                 .find("p", itemprop="description").text
 
         #the two lines below get the necessary information
-        for name in AppFeature:
-            if name != AppFeature.description:
-                add_key_value_info(soup, name, app_info)
+        #description is not there, but the method gracefully moves past it
+        add_available_key_value_info(soup, app_info)
                 
                 
         json_data = []
         for feature in app_info:
-            json_data.append({'feature': feature, 'value': app_info[feature]})
+            json_data.append({'feature': feature.name, 'value': app_info[feature]})
         return json_data
     except requests.ConnectionError:
         return jsonify({'error': 'unable to connect'})
