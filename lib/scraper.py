@@ -6,54 +6,29 @@ from enum import Enum
 AppFeature = Enum("AppFeature", 
     "Name Version Number-of-Downloads Release-Date Description")
 
+
+def add_description_key_value_info(soup, app_info):
+    description_tag_with_breaks = soup.find(class_="view-app__description").\
+        find("p", itemprop="description")
+    for br in description_tag_with_breaks.find_all("br"):
+        br.replace_with("\n")
+    app_info[AppFeature.description] = description_tag_with_breaks.text
+
 def add_available_key_value_info(soup, app_info):
     """ as long as the detailed information exists we can scrape
         the website for everything except the description
+        
+        the two lines below get the necessary information
+        #description is not there, but the method gracefully moves past it
     """
     for feature in AppFeature:
         for tr_app_info_row in soup.find_all("tr", class_="app-info__row"):
             td_list = tr_app_info_row.find_all("td")
-            if td_list and feature.name.lower().replace("-"," ") == \
-                    td_list[0].text.lower():
+            if td_list and feature.name.lower().replace("-"," ") \
+                    == td_list[0].text.lower():
                 app_info[feature] = td_list[1].text
 
-"""
->>> for br in k.find_all("br"):
-...   br.replace_with("\n")
-...
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
->>> k
-<p itemprop="description">Looking for the most talked about TV programmes and films from the around the world? They’re all on Netflix.
 
-We’ve got award-winning series, films, documentaries and stand-up specials. And with the mobile app, you get Netflix while you travel, commute, or just take a break.
-
-What you’ll love about Netflix:
-
-• We add TV programmes and films all the time. Browse new titles or search for your favourites, and stream videos straight to your device.
-• The more you watch, the better Netflix gets at recommending TV programmes and films you’ll love.
-• Create up to five profiles for an account. Profiles give different members of your household their own personalised Netflix.
-• Enjoy a safe watching experience just for children with family-friendly entertainment.
-• Preview quick videos of our series and films and get notifications for new episodes and releases.
-• Save your data. Download titles to your mobile device and watch offline, wherever you are.
-
-For complete terms and conditions, please visit http://www.netflix.com/termsofuse
-For privacy statement, please visit http://www.netflix.com/privacy
-</p>
-"""
 def extract_info(url):
 
 
@@ -63,18 +38,14 @@ def extract_info(url):
         soup = BeautifulSoup(response.content, 'html.parser')
         app_info = {}
 
-        app_info[AppFeature.description] = 
-                soup.find(class_="view-app__description")\
-                .find("p", itemprop="description").text
-
-        #the two lines below get the necessary information
-        #description is not there, but the method gracefully moves past it
+        add_description_key_value_info(soup, app_info)
         add_available_key_value_info(soup, app_info)
                 
                 
         json_data = []
         for feature in app_info:
-            json_data.append({'feature': feature.name, 'value': app_info[feature]})
+            json_data.append\
+                ({'feature': feature.name, 'value': app_info[feature]})
         return json_data
     except requests.ConnectionError:
         return jsonify({'error': 'unable to connect'})
