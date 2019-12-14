@@ -6,7 +6,7 @@ from enum import Enum
 AppFeature = Enum("AppFeature", 
     "App-Name Version Number-of-Downloads Release-Date Description")
 
-def checkProtocol(url):
+def url_is_valid(url):
     # Validate argument starts with http or https
     return url.startswith('http://') or url.startswith('https://')
 
@@ -17,28 +17,18 @@ def add_description_key_value_info(soup, app_info):
     
 def add_available_key_value_info(soup, app_info):
     """ as long as the detailed information exists we can scrape
-        the website for everything except the description
+        the website for everything except the description. 
+        description is not there, but the method gracefully moves past it
+    """
         
-        the two lines below get the necessary information
-        #description is not there, but the method gracefully moves past it
-    """
+    rows = soup.find("div", class_="popup__content popup__content--app-info")
+    for feature in AppFeature:
+        cleaned_query = feature.name.lower().replace("-"," ")
+        cleaned_string = lambda text: text.lower().strip().replace(":", "")
+        app_info[feature] = rows.find("td", string=lambda text: cleaned_query == cleaned_string(text)).next_sibling.next_sibling.text
     
     
-    """
-    TODO: this can be optimized: 
-        think next sibling from beautiful-soup
-        also should be able to get rid of the explicit for on app-info_row
-    """
-    for tr_app_info_row in soup.find_all("tr", class_="app-info__row"):
-        td_list = tr_app_info_row.find_all("td")
-        if td_list: 
-            for feature in AppFeature:
-                if feature.name.lower().replace("-"," ") \
-                        == td_list[0].text.lower().strip().replace(":", ""):
-                    app_info[feature] = td_list[1].text
-                    
 def extract_info(url):
-
 
     try:
         response = requests.get(url)
