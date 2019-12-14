@@ -1,28 +1,6 @@
-tests
------
-	1. url_has_aptoide.com		-> "url must be an aptoide url"
-	2. url returns 200 message. -> "site not reacheable"
-	3. 
-	
-import regex
-	
 """
-this is a regression test. 
-changing functionality will cause things here to break. 
-"""
-
--def checkProtocol(url):
--    # Validate argument starts with http or https
--    return url.startswith('http://') or url.startswith('https://')
--
-
-
-def test_checkProtocol():
-    assert checkProtocol("github.com") == False
-    assert checkProtocol("http:/github.com") == False
-    assert checkProtocol("https://github.com") == True
-    assert checkProtocol("https:/github.com") == False
-
+def test_scraper_extract_info(self):
+    
 
 def test_linkCheck():
     assert linkCheck("https://www.github.com")
@@ -130,4 +108,4 @@ class FaceBookUnitTestCase(unittest.TestCase):
         self.assertNotNone(re.match(window, r"\d+\w* - \d+\w*"))
         
     def test_date_is_as_expected(self):
-    
+"""
