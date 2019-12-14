@@ -1,7 +1,7 @@
 #!flask/bin/python
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template
 from os import environ
-import lib.scraper
+import scraper
 import sys
 
 app = Flask(__name__)
@@ -9,20 +9,19 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    print("foo", file=sys.stderr)
     return render_template('index.html')
 
 
 @app.route('/', methods=['POST'])
 def index_post():
     url = request.form['search']
-    data = lib.scraper.extract_info(url)
-    print(url, data, file=sys.stderr)
+    data = scraper.extract_info(url)
     if isinstance(data, list):
         keys = ['Feature', 'Value']
         return render_template('index.html', data=data, keys=keys)
     else:
         return render_template('index.html', invalid_data=data)
+
 
 @app.errorhandler(404)
 def page_not_found(e):
