@@ -1,13 +1,14 @@
 from bs4 import BeautifulSoup
 from flask import jsonify
 import requests
-from enum import Enum 
+from enum import Enum
 import sys
-AppFeature = Enum("AppFeature", 
+AppFeature = Enum("AppFeature",
 "App-Name Version Number-of-Downloads Release-Date Description")
 
 def url_is_valid(url):
-    # Validate argument starts with http or https
+    """Validate argument starts with http or https"""
+     
     return url.startswith('http://') or url.startswith('https://')
 
 def get_description_value(soup):
@@ -15,11 +16,12 @@ def get_description_value(soup):
     return "".join(str(content) for content in description_contents)
     
 def get_value_from_detailed_info(soup, feature):
-    """ as long as the detailed information exists we can scrape
-        the website for everything except the description. 
-        description is not there, but the method gracefully moves past it
-    """
-        
+    """get_value_from_detailed_info
+
+    as long as the detailed information exists we can scrape
+    the website for everything except the description. 
+    description is not there, but the method gracefully moves past it
+    """        
     rows = soup.find("div", class_="popup__content popup__content--app-info")
     cleaned_query = feature.name.lower().replace("-"," ")
     cleaned_string = lambda text: text.lower().strip().replace(":", "")

@@ -49,7 +49,8 @@ jobs:
           command: |
             . venv/bin/activate
             python -m unittest discover -s = tests
-
+            flake8
+            
       - store_artifacts:
           path: test-reports
           destination: test-reports
