@@ -11,10 +11,8 @@ def url_is_valid(url):
     return url.startswith('http://') or url.startswith('https://')
 
 def get_description_value(soup):
-    return soup.\
-        find(class_="view-app__description").\
-        find("p", itemprop="description").text
-
+    description_contents = soup.find(class_="view-app__description").find("p", itemprop="description").contents
+    return "".join(str(content) for content in description_contents)
     
 def get_value_from_detailed_info(soup, feature):
     """ as long as the detailed information exists we can scrape
@@ -31,7 +29,9 @@ def get_value_from_detailed_info(soup, feature):
 
 def get_aptoide_content(url): 
     try:
-        response = requests.get(url)
+        response = None
+        if url_is_valid(url): 
+            response = requests.get(url)
         if response and response.status_code == 200: 
             aptoide_content = response.content
         else: raise Exception("invalid response")

@@ -18,7 +18,7 @@
   <input id="textbox" type="url" class="search-box" name="search" autofocus type="submit"/>
   </form>
   <span class="search-button">
-  <span onclick="return submit()" class="search-icon"></span>
+  <span onclick="validateURL();document.getElementById('formsearch').submit();" class="search-icon"></span>
   </span>
   </div>
  <div class="overlay"></div>
@@ -30,7 +30,11 @@
 	<thead>
 		<tr>
       {% for key in keys %}
+	    {% if loop.index == 1 %}
+			<th style="width:125px;"><h1>{{ key }}</h1></th>
+		{% else %}
 			<th><h1>{{ key }}</h1></th>
+		{% endif %}
       {% endfor %}
 		</tr>
 	</thead>
@@ -39,7 +43,7 @@
 		<tr>
       {% for url in dict_item.values() %}
       <td>
-      <a style="color:Black;">{{url}}</a>
+      <a style="color:Black;">{{url|safe}}</a>
       </td>
       {% endfor %}
 		</tr>
