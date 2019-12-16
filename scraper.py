@@ -9,7 +9,8 @@ AppFeature = Enum("AppFeature",
 def url_is_valid(url):
     """Validate argument starts with http or https"""
      
-    return url.startswith('http://') or url.startswith('https://')
+    return (url.startswith('http://') or url.startswith('https://'))\
+        and url.rstrip("/").endswith("aptoide.com")
 
 def get_description_value(soup):
     description_contents = soup.\
