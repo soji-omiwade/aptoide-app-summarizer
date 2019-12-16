@@ -12,21 +12,25 @@ def url_is_valid(url):
     return url.startswith('http://') or url.startswith('https://')
 
 def get_description_value(soup):
-    description_contents = soup.find(class_="view-app__description").find("p", itemprop="description").contents
+    description_contents = soup.\
+        find(class_="view-app__description").\
+        find("p", itemprop="description").contents
     return "".join(str(content) for content in description_contents)
     
-def get_value_from_detailed_info(soup, feature):
+def get_value_from_detailed_info(detailed_info_popup, feature):
     """get_value_from_detailed_info
 
     as long as the detailed information exists we can scrape
     the website for everything except the description. 
     description is not there, but the method gracefully moves past it
+    
+    the lower is necessary  because of number of downloads! and a good idea in general
     """        
-    rows = soup.find("div", class_="popup__content popup__content--app-info")
-    cleaned_query = feature.name.lower().replace("-"," ")
+    feature = feature.name.lower().replace("-"," ")
     cleaned_string = lambda text: text.lower().strip().replace(":", "")
-    foo = lambda text: cleaned_query == cleaned_string(text)
-    return rows.find("td", string = foo).next_sibling.next_sibling.text
+    return detailed_info_popup\
+        .find("td", string = lambda text: feature == cleaned_string(text))\
+        .next_sibling.next_sibling.text
 
 
 def get_aptoide_content(url): 
@@ -36,17 +40,16 @@ def get_aptoide_content(url):
             response = requests.get(url)
         if response and response.status_code == 200: 
             aptoide_content = response.content
-        else: raise Exception("invalid response")
+        else: 
+            raise Exception("invalid response")
     except requests.ConnectionError as e:
-        print("conn-err: ", e, file=sys.stderr)
         return None, jsonify({'error': 'unable to connect'})
     except(Exception) as e:
-        print("except-err: ", e, file=sys.stderr)
         return None, jsonify({'error': 'unknown'})
     return aptoide_content, None
     
     
-def extract_info(url):
+def get_app_info_in_json_form(url):
 
     aptoide_content, json_error_response = get_aptoide_content(url)
     
@@ -56,9 +59,10 @@ def extract_info(url):
     soup = BeautifulSoup(aptoide_content, 'html.parser')
     app_info = {}
 
+    detailed_info_popup = soup.find("div", class_="popup__content popup__content--app-info")
     for feature in AppFeature:
         if feature != AppFeature.Description:
-            app_info[feature] = get_value_from_detailed_info(soup, feature)
+            app_info[feature] = get_value_from_detailed_info(detailed_info_popup, feature)
         
     app_info[AppFeature.Description] = get_description_value(soup)
                 

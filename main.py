@@ -1,3 +1,9 @@
+"""
+- change repo name to aptoide_apps_summarizer
+- move the binary of the content to a file to not violate the pip
+- edge cases; fail gracefully: shouldn't hang; shouldn't crash. 
+- validations
+"""
 #!flask/bin/python
 from flask import Flask, request, render_template
 from os import environ
@@ -15,7 +21,7 @@ def index():
 @app.route('/', methods=['POST'])
 def index_post():
     url = request.form['search']
-    data = scraper.extract_info(url)
+    data = scraper.get_app_info_in_json_form(url)
     if isinstance(data, list):
         keys = ['Feature', 'Value']
         return render_template('index.html', data=data, keys=keys)
