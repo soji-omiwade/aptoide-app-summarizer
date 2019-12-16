@@ -1,11 +1,3 @@
-"""
-to-do
-done - give repo better name, like aptoide_apps_summarizer
-done - move the binary of the test content to a file 
--in progress: 
-    - done edge cases; fail gracefully: shouldn't hang; shouldn't crash. validations
-    - in progress: what remains is to ensure graceful fail if any features are missing
-"""
 #!flask/bin/python
 from flask import Flask, request, render_template
 from os import environ
