@@ -1,4 +1,4 @@
-"""This script implements a website to scrape aptoide content.
+"""This script implements the APIs for a website to scrape aptoide content.
 
 Problem Statement:
 After submitting the [aptoide app] URL, the website returns a page displaying
