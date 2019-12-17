@@ -15,12 +15,12 @@ def index():
 @app.route('/', methods=['POST'])
 def index_post():
     url = request.form['search']
-    data = scraper.get_app_info_in_json_form(url)
-    if isinstance(data, list):
+    data, error = scraper.get_app_summary(url)
+    if not error:
         keys = ['Feature', 'Value']
         return render_template('index.html', data=data, keys=keys)
     else:
-        return render_template('index.html', invalid_data=data)
+        return render_template('index.html', invalid_data=error)
 
 
 @app.errorhandler(404)
