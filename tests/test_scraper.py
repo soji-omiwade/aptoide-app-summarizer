@@ -29,15 +29,14 @@ class MyTestCase(unittest.TestCase):
             = ["Facebook", "1.0.10", "50M - 250M", "2019-12-11 19:12:35"]
         for result, feature in zip(expected_results, AppFeature):
             soup = BeautifulSoup(self.aptoide_content, 'html.parser')
-            self.assertEqual(result,
-                             scraper.get_detailed_info_value(soup, feature))
+            self.assertEqual(result, scraper.get_feature_value(soup, feature))
 
-    def test_get_app_info_in_json_form_for_valid_url(self):
+    def test_get_app_summary_for_valid_url(self):
         url = "https://facebook.en.aptoide.com/"
         expected_results\
             = ["Facebook", "1.0.10", "50M - 250M", "2019-12-11 19:12:35"]
 
-        json_data = scraper.get_app_info_in_json_form(url)
+        json_data, _ = scraper.get_app_summary(url)
 
         # first check the string is contained
         self.assertTrue(json_data[4]["feature"], AppFeature.Description.name)
@@ -46,7 +45,10 @@ class MyTestCase(unittest.TestCase):
 
         expected_json = []
         for feature, result in zip(AppFeature, expected_results):
-            expected_json.append({'feature': feature.name, 'value': result})
+            expected_json.append({
+                'feature': feature.name.replace("-", " "),
+                'value': result
+            })
 
         # pop the description, since expected_json doesn't include items
         # and we already validated it correctly
@@ -60,10 +62,10 @@ class ConnectionTestCase(unittest.TestCase):
 
     def test_get_aptoide_content(self):
         url = "https://facebook.en.aptoide.com/"
-        aptoide_content, json_error_response = scraper.get_aptoide_content(url)
+        aptoide_content, json_error_response = scraper.get_content(url)
         self.assertIsNone(json_error_response)
         self.assertIsNotNone(aptoide_content)
 
     def test_get_aptoide_content_via_bad_url(self):
         url = "https://facebook.en.aptoodde.com/"
-        self.assertRaises(RuntimeError, scraper.get_aptoide_content, url)
+        self.assertRaises(RuntimeError, scraper.get_content, url)
