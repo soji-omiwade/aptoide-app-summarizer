@@ -33,17 +33,21 @@ or the URL is not an aptoide app URL
 
 
 ## Usage
+
+
+Access via http://localhost:8080
+
+### Python
+
+```bash
 python main.py
+```
+
 Access via http://localhost:8080
 
 > Set environment variable `PORT` locally to change listening port from `8080`
-
-
 ### Stack
 - Python 3
 - BeautifulSoup4
 - Jquery
-
-## Screenshots
-
 
