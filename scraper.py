@@ -1,28 +1,31 @@
+"""scraper.py is fishes in the sea."""
 from bs4 import BeautifulSoup
 from flask import jsonify
+import flask
 import requests
 from enum import Enum
-AppFeature = Enum(
-                "AppFeature", "App-Name Version Number-of-Downloads\
-                Release-Date Description")
+
+
+AppFeature = Enum("AppFeature", "App-Name Version Number-of-Downloads\
+    Release-Date Description")
 
 
 def url_is_valid(url):
-    """Validate argument starts with http or https"""
-
+    """Validate argument starts with http or https."""
     return (url.startswith('http://') or url.startswith('https://'))\
         and url.rstrip("/").endswith("aptoide.com")
 
 
-def get_description_value(soup):
+def get_description_value(soup) -> str:
+    """Validate argument starts with http or https."""
     description_contents = soup.\
         find(class_="view-app__description").\
         find("p", itemprop="description").contents
     return "".join(str(content) for content in description_contents)
 
 
-def get_detailed_info_value(detailed_info_popup, feature):
-    """get_detailed_info_value
+def get_feature_value(detailed_info_popup, feature):
+    """get_feature_value.
 
     as long as the detailed information exists we can scrape
     the website for everything except the description.
@@ -39,7 +42,8 @@ def get_detailed_info_value(detailed_info_popup, feature):
         .next_sibling.next_sibling.text
 
 
-def get_aptoide_content(url):
+def get_content(url) -> (requests.models.Response, flask.wrappers.Response):
+    """Validate argument starts with http or https."""
     try:
         response = None
         if url_is_valid(url):
@@ -55,28 +59,30 @@ def get_aptoide_content(url):
     return aptoide_content, None
 
 
-def get_app_info_in_json_form(url):
+def get_app_summary(url: str) -> (list, flask.wrappers.Response):
+    """Validate argument starts with http or https.
 
-    aptoide_content, json_error_response = get_aptoide_content(url)
-
+    this is stuffy
+    """
+    aptoide_content, json_error_response = get_content(url)
     if not aptoide_content:
-        return json_error_response
+        return [], json_error_response
 
     soup = BeautifulSoup(aptoide_content, 'html.parser')
     app_info = {}
-
     detailed_info_popup\
         = soup.find("div", class_="popup__content popup__content--app-info")
-    if detailed_info_popup:
-        for feature in AppFeature:
-            if feature != AppFeature.Description:
-                app_info[feature]\
-                    = get_detailed_info_value(detailed_info_popup, feature)
+    if not detailed_info_popup:
+        return [], jsonify({'error': 'detailed info pop-up box missing'})
 
+    for feature in AppFeature:
+        if feature != AppFeature.Description:
+            app_info[feature] = get_feature_value(detailed_info_popup, feature)
     app_info[AppFeature.Description] = get_description_value(soup)
-
     json_data = []
     for feature in app_info:
-        json_data.append({'feature': feature.name, 'value': app_info[feature]})
-
-    return json_data
+        json_data.append({
+            'feature': feature.name.replace("-", " "),
+            'value': app_info[feature]
+        })
+    return json_data, None
