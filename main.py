@@ -22,7 +22,7 @@ def index_post():
     else:
         return render_template('index.html', invalid_data=error)
 
-
+#when the page isn't found
 @app.errorhandler(404)
 def page_not_found(e):
     code = '404'
