@@ -1,3 +1,6 @@
+#Note 
+See mirror note at the end of this README, regarding the frontend of this application
+
 # aptoide-app-summarizer
 
 Flask App to scrape and and extract app information from aptoide
@@ -51,3 +54,5 @@ Access via http://localhost:8080
 - BeautifulSoup4
 - Jquery
 
+#Mirror Note
+The front end Javascript/HTML code was mirroed from https://github.com/circa10a/web-link-tester
