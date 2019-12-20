@@ -31,6 +31,7 @@ class MyTestCase(unittest.TestCase):
             soup = BeautifulSoup(self.aptoide_content, 'html.parser')
             self.assertEqual(result, scraper.get_feature_value(soup, feature))
 
+    @unittest.skip("this test needs to be rethought; the url content changes with time!")            
     def test_get_app_summary_for_valid_url(self):
         url = "https://facebook.en.aptoide.com/"
         expected_results\
